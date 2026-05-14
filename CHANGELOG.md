@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-13
+
+### Changed
+
+- Forked project from netbox-unifi-sync to fix some code issues while adding more features for special use cases.
+
+### Migration
+
+- Existing installs of `netbox-unifi-sync` must update their Django migration history before running migrations on the new package:
+  `UPDATE django_migrations SET app='netbox_unifi' WHERE app='netbox_unifi_sync';`
+- `pip uninstall netbox-unifi-sync` then `pip install netbox-unifi`.
+- Plugin entry in NetBox `configuration.py` becomes `netbox_unifi` (was `netbox_unifi_sync`).
+
 ## [0.3.23] - 2026-04-20
 
 ### Added
