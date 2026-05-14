@@ -977,6 +977,32 @@ def _extract_prefix_cidr(net):
         return None
 
 
+def _resolve_netbox_vlan_for_net(nb, nb_site, net):
+    """Find the NetBox VLAN object that corresponds to a UniFi network record.
+
+    Returns the VLAN object or None. Mirrors the VID extraction in
+    sync_site_vlans so prefixes and VLANs agree on which network owns them.
+    """
+    raw_vid = net.get("vlanId") or net.get("vlan") or net.get("vlan_id")
+    if raw_vid in (None, "", 0, "0"):
+        return None
+    try:
+        vid = int(raw_vid)
+    except (TypeError, ValueError):
+        return None
+    try:
+        vlan = nb.ipam.vlans.get(vid=vid, site_id=nb_site.id)
+    except Exception:
+        vlan = None
+    if not vlan:
+        # Site-less VLAN groups: fall back to a global lookup by vid alone.
+        try:
+            vlan = nb.ipam.vlans.get(vid=vid)
+        except Exception:
+            vlan = None
+    return vlan
+
+
 def sync_site_prefixes(nb, site_obj, nb_site, tenant, unifi=None):
     """Sync prefixes from UniFi network configs to NetBox."""
     try:
@@ -1004,10 +1030,26 @@ def sync_site_prefixes(nb, site_obj, nb_site, tenant, unifi=None):
             continue
         seen_prefixes.add(prefix_cidr)
 
+        vlan_obj = _resolve_netbox_vlan_for_net(nb, nb_site, net)
+
         existing = nb.ipam.prefixes.get(prefix=prefix_cidr, scope_type="dcim.site", scope_id=nb_site.id)
         if not existing:
             existing = nb.ipam.prefixes.get(prefix=prefix_cidr)
         if existing:
+            # Backfill VLAN assignment on prefixes that predate VLAN linking.
+            if vlan_obj is not None:
+                current_vlan_id = getattr(getattr(existing, "vlan", None), "id", None)
+                if current_vlan_id != vlan_obj.id:
+                    try:
+                        existing.vlan = vlan_obj.id
+                        existing.save()
+                        logger.info(
+                            f"Linked prefix {prefix_cidr} to VLAN {vlan_obj.vid} at site {nb_site.name}"
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            f"Could not link prefix {prefix_cidr} to VLAN {vlan_obj.vid}: {e}"
+                        )
             continue
 
         payload = {
@@ -1016,6 +1058,8 @@ def sync_site_prefixes(nb, site_obj, nb_site, tenant, unifi=None):
             "tenant_id": tenant.id,
             "description": f"UniFi: {net_name}",
         }
+        if vlan_obj is not None:
+            payload["vlan"] = vlan_obj.id
         payload_with_scope = dict(payload)
         payload_with_scope["scope_type"] = "dcim.site"
         payload_with_scope["scope_id"] = nb_site.id
@@ -2817,16 +2861,6 @@ def process_device(unifi, nb, site, device, nb_ubiquiti, tenant, unifi_device_ip
                     return
 
         if nb_device:
-            # Ensure "zabbix" tag is present
-            zabbix_tag = ensure_tag(nb, "zabbix")
-            if zabbix_tag:
-                current_tags = [t.id for t in (nb_device.tags or [])]
-                if zabbix_tag.id not in current_tags:
-                    current_tags.append(zabbix_tag.id)
-                    nb_device.tags = current_tags
-                    nb_device.save()
-                    logger.info(f"Added 'zabbix' tag to device {device_name}.")
-
             if _sync_option("SYNC_DEVICE_STATUS", default=False):
                 try:
                     sync_device_state(nb, nb_device, device)
