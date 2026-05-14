@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from decimal import Decimal, InvalidOperation
 from slugify import slugify
 import os
 import re
@@ -318,31 +319,31 @@ def prepare_netbox_sites(netbox_sites):
     """
     return {netbox_site.name: netbox_site for netbox_site in netbox_sites}
 
-def match_sites_to_netbox(ubiquity_desc, netbox_sites_dict, config=None):
+def match_sites_to_netbox(ubiquiti_desc, netbox_sites_dict, config=None):
     """
-    Match Ubiquity site to NetBox site using the site mapping configuration.
+    Match Ubiquiti site to NetBox site using the site mapping configuration.
 
-    :param ubiquity_desc: The description of the Ubiquity site.
+    :param ubiquiti_desc: The description of the Ubiquiti site.
     :param netbox_sites_dict: A dictionary mapping NetBox site names to site objects.
     :param config: Runtime configuration dictionary
     :return: The matched NetBox site, or None if no match is found.
     """
     # Get the corresponding NetBox site name from the mapping
-    netbox_site_name = get_netbox_site_name(ubiquity_desc, config)
-    logger.debug(f'Mapping Ubiquity site: "{ubiquity_desc}" -> "{netbox_site_name}"')
+    netbox_site_name = get_netbox_site_name(ubiquiti_desc, config)
+    logger.debug(f'Mapping Ubiquiti site: "{ubiquiti_desc}" -> "{netbox_site_name}"')
     
     # Look for exact match in NetBox sites
     if netbox_site_name in netbox_sites_dict:
         netbox_site = netbox_sites_dict[netbox_site_name]
-        logger.debug(f'Matched Ubiquity site "{ubiquity_desc}" to NetBox site "{netbox_site.name}"')
+        logger.debug(f'Matched Ubiquiti site "{ubiquiti_desc}" to NetBox site "{netbox_site.name}"')
         return netbox_site
     
     # If site mapping exists but no match found, provide more helpful message
     if config and 'UNIFI' in config and ('USE_SITE_MAPPING' in config['UNIFI'] and config['UNIFI']['USE_SITE_MAPPING'] or 
                                         'SITE_MAPPINGS' in config['UNIFI'] and config['UNIFI']['SITE_MAPPINGS']):
-        logger.debug(f'No match found for Ubiquity site "{ubiquity_desc}". Add mapping in UNIFI_SITE_MAPPINGS.')
+        logger.debug(f'No match found for Ubiquiti site "{ubiquiti_desc}". Add mapping in UNIFI_SITE_MAPPINGS.')
     else:
-        logger.debug(f'No match found for Ubiquity site "{ubiquity_desc}". Set UNIFI_SITE_MAPPINGS in .env if needed.')
+        logger.debug(f'No match found for Ubiquiti site "{ubiquiti_desc}". Set UNIFI_SITE_MAPPINGS in .env if needed.')
     return None
 
 def setup_logging(min_log_level=logging.INFO):
@@ -2559,15 +2560,15 @@ def _ensure_device_type_specs_inner(nb, nb_device_type, model, specs):
     if specs.get("airflow") and getattr(nb_device_type, "airflow", None) != specs["airflow"]:
         nb_device_type.airflow = specs["airflow"]
         changed = True
-    # weight
+    # weight — NetBox DeviceType.weight is a Decimal; passing a float breaks _abs_weight()
     if specs.get("weight") is not None:
         try:
-            w = float(specs["weight"])
+            w = Decimal(str(specs["weight"]))
             if getattr(nb_device_type, "weight", None) != w:
                 nb_device_type.weight = w
                 nb_device_type.weight_unit = specs.get("weight_unit", "kg")
                 changed = True
-        except (ValueError, TypeError):
+        except (InvalidOperation, ValueError, TypeError):
             pass
     # Add PoE budget as comment if available
     poe = specs.get("poe_budget", 0)
@@ -2636,7 +2637,7 @@ def _ensure_device_type_specs_inner(nb, nb_device_type, model, specs):
         _sync_templates(nb, nb_device_type, model, nb.dcim.power_port_templates, expected_power, "power-port")
 
 
-def process_device(unifi, nb, site, device, nb_ubiquity, tenant, unifi_device_ips=None, unifi_site_obj=None):
+def process_device(unifi, nb, site, device, nb_ubiquiti, tenant, unifi_device_ips=None, unifi_site_obj=None):
     """Process a device and add it to NetBox."""
     try:
         device_name = get_device_name(device)
@@ -2664,15 +2665,15 @@ def process_device(unifi, nb, site, device, nb_ubiquity, tenant, unifi_device_ip
             logger.debug(f"Running without VRF for site {site.name} (mode={vrf_mode})")
 
         # Device Type creation
-        logger.debug(f"Checking for existing device type: {device_model} (manufacturer ID: {nb_ubiquity.id})")
-        nb_device_type = nb.dcim.device_types.get(model=device_model, manufacturer_id=nb_ubiquity.id)
+        logger.debug(f"Checking for existing device type: {device_model} (manufacturer ID: {nb_ubiquiti.id})")
+        nb_device_type = nb.dcim.device_types.get(model=device_model, manufacturer_id=nb_ubiquiti.id)
         if not nb_device_type:
             # Pre-populate from community specs when creating a new device type
             specs = _resolve_device_specs(device_model)
             create_data = {
-                "manufacturer": nb_ubiquity.id,
+                "manufacturer": nb_ubiquiti.id,
                 "model": device_model,
-                "slug": (specs or {}).get("slug") or slugify(f'{nb_ubiquity.name}-{device_model}'),
+                "slug": (specs or {}).get("slug") or slugify(f'{nb_ubiquiti.name}-{device_model}'),
             }
             if specs:
                 if specs.get("part_number"):
@@ -2685,9 +2686,9 @@ def process_device(unifi, nb, site, device, nb_ubiquity, tenant, unifi_device_ip
                     create_data["airflow"] = specs["airflow"]
                 if specs.get("weight") is not None:
                     try:
-                        create_data["weight"] = float(specs["weight"])
+                        create_data["weight"] = Decimal(str(specs["weight"]))
                         create_data["weight_unit"] = specs.get("weight_unit", "kg")
-                    except (ValueError, TypeError):
+                    except (InvalidOperation, ValueError, TypeError):
                         pass
             try:
                 nb_device_type = nb.dcim.device_types.create(create_data)
@@ -2697,10 +2698,10 @@ def process_device(unifi, nb, site, device, nb_ubiquity, tenant, unifi_device_ip
                 error_message = str(e).lower()
                 if "duplicate key value violates unique constraint" in error_message:
                     # Race condition guard: another worker may have created the same type just before us.
-                    nb_device_type = nb.dcim.device_types.get(model=device_model, manufacturer_id=nb_ubiquity.id)
+                    nb_device_type = nb.dcim.device_types.get(model=device_model, manufacturer_id=nb_ubiquiti.id)
                     if not nb_device_type and create_data.get("part_number"):
                         nb_device_type = nb.dcim.device_types.get(
-                            part_number=create_data["part_number"], manufacturer_id=nb_ubiquity.id
+                            part_number=create_data["part_number"], manufacturer_id=nb_ubiquiti.id
                         )
                     if nb_device_type:
                         logger.debug(
@@ -3060,7 +3061,7 @@ def process_device(unifi, nb, site, device, nb_ubiquity, tenant, unifi_device_ip
     except Exception as e:
         logger.exception(f"Failed to process device {get_device_name(device)} at site {site}: {e}")
 
-def process_site(unifi, nb, site_obj, site_display_name, nb_site, nb_ubiquity, tenant):
+def process_site(unifi, nb, site_obj, site_display_name, nb_site, nb_ubiquiti, tenant):
     """
     Process devices for a given site and add them to NetBox.
     Also syncs VLANs, WiFi SSIDs, and uplink cables.
@@ -3155,7 +3156,7 @@ def process_site(unifi, nb, site_obj, site_display_name, nb_site, nb_ubiquity, t
             with ThreadPoolExecutor(max_workers=MAX_DEVICE_THREADS) as executor:
                 futures = []
                 for device in devices:
-                    futures.append(executor.submit(process_device, unifi, nb, nb_site, device, nb_ubiquity, tenant, unifi_device_ips=unifi_device_ips, unifi_site_obj=site_obj))
+                    futures.append(executor.submit(process_device, unifi, nb, nb_site, device, nb_ubiquiti, tenant, unifi_device_ips=unifi_device_ips, unifi_site_obj=site_obj))
 
                 for future in as_completed(futures):
                     try:
@@ -3238,7 +3239,7 @@ def process_site(unifi, nb, site_obj, site_display_name, nb_site, nb_ubiquity, t
     except Exception as e:
         logger.error(f"Failed to process site {site_display_name}: {e}")
 
-def process_controller(unifi_url, unifi_username, unifi_password, unifi_mfa_secret, unifi_api_key, unifi_api_key_header, nb, nb_ubiquity, tenant,
+def process_controller(unifi_url, unifi_username, unifi_password, unifi_mfa_secret, unifi_api_key, unifi_api_key_header, nb, nb_ubiquiti, tenant,
                        netbox_sites_dict, config=None):
     """
     Process all sites and devices for a specific UniFi controller.
@@ -3271,10 +3272,10 @@ def process_controller(unifi_url, unifi_username, unifi_password, unifi_mfa_secr
                 nb_site = match_sites_to_netbox(site_name, netbox_sites_dict, config)
 
                 if not nb_site:
-                    logger.warning(f"No match found for Ubiquity site: {site_name}. Skipping...")
+                    logger.warning(f"No match found for Ubiquiti site: {site_name}. Skipping...")
                     continue
 
-                futures.append(executor.submit(process_site, unifi, nb, site_obj, site_name, nb_site, nb_ubiquity, tenant))
+                futures.append(executor.submit(process_site, unifi, nb, site_obj, site_name, nb_site, nb_ubiquiti, tenant))
 
             # Wait for all site-processing threads to complete
             for future in as_completed(futures):
@@ -3282,7 +3283,7 @@ def process_controller(unifi_url, unifi_username, unifi_password, unifi_mfa_secr
     except Exception as e:
         logger.error(f"Error processing controller {unifi_url}: {e}")
 
-def process_all_controllers(unifi_url_list, unifi_username, unifi_password, unifi_mfa_secret, unifi_api_key, unifi_api_key_header, nb, nb_ubiquity, tenant,
+def process_all_controllers(unifi_url_list, unifi_username, unifi_password, unifi_mfa_secret, unifi_api_key, unifi_api_key_header, nb, nb_ubiquiti, tenant,
                             netbox_sites_dict, config=None):
     """
     Process all UniFi controllers in parallel.
@@ -3299,7 +3300,7 @@ def process_all_controllers(unifi_url_list, unifi_username, unifi_password, unif
                 unifi_api_key,
                 unifi_api_key_header,
                 nb,
-                nb_ubiquity,
+                nb_ubiquiti,
                 tenant,
                 netbox_sites_dict,
                 config,
@@ -3435,9 +3436,9 @@ def cleanup_orphan_cables(nb, nb_site):
     return deleted
 
 
-def cleanup_device_types(nb, nb_ubiquity):
+def cleanup_device_types(nb, nb_ubiquiti):
     """Refresh device type specs and delete unused device types (device_count == 0)."""
-    all_types = list(nb.dcim.device_types.filter(manufacturer_id=nb_ubiquity.id))
+    all_types = list(nb.dcim.device_types.filter(manufacturer_id=nb_ubiquiti.id))
     refreshed = 0
     deleted = 0
     for dt in all_types:
@@ -3463,7 +3464,7 @@ def cleanup_device_types(nb, nb_ubiquity):
     return deleted
 
 
-def run_netbox_cleanup(nb, nb_ubiquity, tenant, netbox_sites_dict, all_unifi_serials_by_site):
+def run_netbox_cleanup(nb, nb_ubiquiti, tenant, netbox_sites_dict, all_unifi_serials_by_site):
     """Orchestrate all cleanup functions."""
     if not _is_cleanup_enabled():
         logger.debug("NetBox cleanup is disabled (NETBOX_CLEANUP != true)")
@@ -3494,7 +3495,7 @@ def run_netbox_cleanup(nb, nb_ubiquity, tenant, netbox_sites_dict, all_unifi_ser
         logger.warning(f"Cleanup error (orphan IPs): {e}")
 
     try:
-        cleanup_device_types(nb, nb_ubiquity)
+        cleanup_device_types(nb, nb_ubiquiti)
     except Exception as e:
         logger.warning(f"Cleanup error (device types): {e}")
 
@@ -3554,7 +3555,23 @@ def _build_netbox_context(config):
     nb = build_netbox_orm_client()
     logger.debug("NetBox ORM client ready")
 
-    nb_ubiquity = nb.dcim.manufacturers.get(slug="ubiquity")
+    # Look up by correct slug first; fall back to the legacy misspelled slug
+    # for installs that were created before the rename, and self-heal the
+    # manufacturer record so it ends up with the correct name and slug.
+    nb_ubiquiti = nb.dcim.manufacturers.get(slug="ubiquiti")
+    if not nb_ubiquiti:
+        legacy = nb.dcim.manufacturers.get(slug="ubiquity")
+        if legacy:
+            legacy.slug = "ubiquiti"
+            legacy.name = "Ubiquiti Inc"
+            try:
+                legacy.save()
+                logger.info(
+                    f"Renamed legacy manufacturer (slug 'ubiquity') to 'Ubiquiti Inc' (slug 'ubiquiti'), ID {legacy.id}."
+                )
+            except Exception as exc:  # nosec B110 — best-effort rename, fall back to using as-is
+                logger.warning(f"Could not rename legacy Ubiquity manufacturer: {exc}")
+            nb_ubiquiti = legacy
     try:
         tenant_name = config['NETBOX']['TENANT']
     except (KeyError, TypeError):
@@ -3628,10 +3645,10 @@ def _build_netbox_context(config):
     netbox_sites_dict = prepare_netbox_sites(netbox_sites)
     logger.debug(f"Prepared {len(netbox_sites_dict)} NetBox sites for mapping")
 
-    if not nb_ubiquity:
-        nb_ubiquity = nb.dcim.manufacturers.create({"name": "Ubiquity Networks", "slug": "ubiquity"})
-        if nb_ubiquity:
-            logger.info(f"Ubiquity manufacturer with ID {nb_ubiquity.id} successfully added to Netbox.")
+    if not nb_ubiquiti:
+        nb_ubiquiti = nb.dcim.manufacturers.create({"name": "Ubiquiti Inc", "slug": "ubiquiti"})
+        if nb_ubiquiti:
+            logger.info(f"Ubiquiti manufacturer with ID {nb_ubiquiti.id} successfully added to Netbox.")
 
     return {
         "config": config,
@@ -3642,7 +3659,7 @@ def _build_netbox_context(config):
         "unifi_api_key": unifi_api_key,
         "unifi_api_key_header": unifi_api_key_header,
         "nb": nb,
-        "nb_ubiquity": nb_ubiquity,
+        "nb_ubiquiti": nb_ubiquiti,
         "tenant": tenant,
         "netbox_sites_dict": netbox_sites_dict,
     }
@@ -3681,14 +3698,14 @@ def run_sync_once(config=None, clear_state=False):
         context["unifi_api_key"],
         context["unifi_api_key_header"],
         context["nb"],
-        context["nb_ubiquity"],
+        context["nb_ubiquiti"],
         context["tenant"],
         context["netbox_sites_dict"],
         context["config"],
     )
     run_netbox_cleanup(
         context["nb"],
-        context["nb_ubiquity"],
+        context["nb_ubiquiti"],
         context["tenant"],
         context["netbox_sites_dict"],
         _cleanup_serials_by_site,
