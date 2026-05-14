@@ -5,30 +5,30 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-VIEWS_PATH = PROJECT_ROOT / "netbox_unifi_sync" / "views.py"
+VIEWS_PATH = PROJECT_ROOT / "netbox_unifi" / "views.py"
 CONTROLLERS_TEMPLATE_PATH = (
     PROJECT_ROOT
-    / "netbox_unifi_sync"
+    / "netbox_unifi"
     / "templates"
-    / "netbox_unifi_sync"
+    / "netbox_unifi"
     / "controllers.html"
 )
 MAPPINGS_TEMPLATE_PATH = (
     PROJECT_ROOT
-    / "netbox_unifi_sync"
+    / "netbox_unifi"
     / "templates"
-    / "netbox_unifi_sync"
+    / "netbox_unifi"
     / "mappings.html"
 )
 SETTINGS_TEMPLATE_PATH = (
     PROJECT_ROOT
-    / "netbox_unifi_sync"
+    / "netbox_unifi"
     / "templates"
-    / "netbox_unifi_sync"
+    / "netbox_unifi"
     / "settings.html"
 )
-URLS_PATH = PROJECT_ROOT / "netbox_unifi_sync" / "urls.py"
-SYNC_RUNS_PATH = PROJECT_ROOT / "netbox_unifi_sync" / "services" / "sync_runs.py"
+URLS_PATH = PROJECT_ROOT / "netbox_unifi" / "urls.py"
+SYNC_RUNS_PATH = PROJECT_ROOT / "netbox_unifi" / "services" / "sync_runs.py"
 
 
 def _decorator_name(node: ast.AST) -> str:
@@ -62,7 +62,7 @@ def test_controller_test_views_are_post_only():
 def test_controller_list_template_uses_post_for_test_action():
     template = CONTROLLERS_TEMPLATE_PATH.read_text(encoding="utf-8")
     assert (
-        "<form method=\"post\" action=\"{% url 'plugins:netbox_unifi_sync:controller_test' c.pk %}\""
+        "<form method=\"post\" action=\"{% url 'plugins:netbox_unifi:controller_test' c.pk %}\""
         in template
     )
 
@@ -71,14 +71,14 @@ def test_dashboard_sync_permission_accepts_standard_add_permission():
     source = VIEWS_PATH.read_text(encoding="utf-8")
     template = (
         PROJECT_ROOT
-        / "netbox_unifi_sync"
+        / "netbox_unifi"
         / "templates"
-        / "netbox_unifi_sync"
+        / "netbox_unifi"
         / "dashboard.html"
     ).read_text(encoding="utf-8")
 
-    assert "netbox_unifi_sync.run_sync" in source
-    assert "netbox_unifi_sync.add_syncrun" in source
+    assert "netbox_unifi.run_sync" in source
+    assert "netbox_unifi.add_syncrun" in source
     assert "{% if can_queue_sync %}" in template
 
 
@@ -86,8 +86,8 @@ def test_controller_test_permission_accepts_standard_change_permission():
     source = VIEWS_PATH.read_text(encoding="utf-8")
 
     assert "def _can_test_controller" in source
-    assert "netbox_unifi_sync.test_controller" in source
-    assert "netbox_unifi_sync.change_unificontroller" in source
+    assert "netbox_unifi.test_controller" in source
+    assert "netbox_unifi.change_unificontroller" in source
 
 
 def test_plugin_changelog_routes_and_links_are_registered():
@@ -109,7 +109,7 @@ def test_api_urls_have_reverseable_namespace():
     urls = URLS_PATH.read_text(encoding="utf-8")
 
     assert "namespace=\"api\"" in urls
-    assert "netbox_unifi_sync_api" in urls
+    assert "netbox_unifi_api" in urls
 
 
 def test_plugin_update_views_snapshot_before_save():

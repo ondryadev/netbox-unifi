@@ -4,31 +4,31 @@ services:
     ports:
       - "8000:8080"
     volumes:
-      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi-sync}:/plugins/unifi2netbox:rw
-      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi-sync}:/opt/netbox/netbox/plugins/unifi2netbox:rw
+      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi}:/plugins/ondryadev:rw
+      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi}:/opt/netbox/netbox/plugins/ondryadev:rw
     entrypoint:
       - /bin/bash
       - -lc
       - |
-        if [ -f /plugins/unifi2netbox/pyproject.toml ] || [ -f /plugins/unifi2netbox/setup.py ]; then
-          /usr/local/bin/uv pip install --python /opt/netbox/venv/bin/python -e /plugins/unifi2netbox
+        if [ -f /plugins/ondryadev/pyproject.toml ] || [ -f /plugins/ondryadev/setup.py ]; then
+          /usr/local/bin/uv pip install --python /opt/netbox/venv/bin/python -e /plugins/ondryadev
         else
-          echo "Skipping /plugins/unifi2netbox install (not a Python project)"
+          echo "Skipping /plugins/ondryadev install (not a Python project)"
         fi
         exec /usr/bin/tini -- /opt/netbox/docker-entrypoint.sh /opt/netbox/launch-netbox.sh
 
   netbox-worker:
     user: "root"
     volumes:
-      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi-sync}:/plugins/unifi2netbox:rw
-      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi-sync}:/opt/netbox/netbox/plugins/unifi2netbox:rw
+      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi}:/plugins/ondryadev:rw
+      - ${UNIFI2NETBOX_PLUGIN_PATH:-/absolute/path/to/netbox-unifi}:/opt/netbox/netbox/plugins/ondryadev:rw
     entrypoint:
       - /bin/bash
       - -lc
       - |
-        if [ -f /plugins/unifi2netbox/pyproject.toml ] || [ -f /plugins/unifi2netbox/setup.py ]; then
-          /usr/local/bin/uv pip install --python /opt/netbox/venv/bin/python -e /plugins/unifi2netbox
+        if [ -f /plugins/ondryadev/pyproject.toml ] || [ -f /plugins/ondryadev/setup.py ]; then
+          /usr/local/bin/uv pip install --python /opt/netbox/venv/bin/python -e /plugins/ondryadev
         else
-          echo "Skipping /plugins/unifi2netbox install (not a Python project)"
+          echo "Skipping /plugins/ondryadev install (not a Python project)"
         fi
         exec /usr/bin/tini -- /opt/netbox/docker-entrypoint.sh /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py rqworker

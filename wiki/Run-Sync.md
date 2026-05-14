@@ -8,31 +8,31 @@
 
 Required NetBox object permissions:
 
-- `view` on `netbox_unifi_sync.SyncRun` to open the dashboard
-- `add` on `netbox_unifi_sync.SyncRun` to queue a manual sync
+- `view` on `netbox_unifi.SyncRun` to open the dashboard
+- `add` on `netbox_unifi.SyncRun` to queue a manual sync
 
 The plugin still accepts the legacy custom permission
-`netbox_unifi_sync.run_sync`, but the standard NetBox object permission for
-manual queueing is `netbox_unifi_sync.add_syncrun`.
+`netbox_unifi.run_sync`, but the standard NetBox object permission for
+manual queueing is `netbox_unifi.add_syncrun`.
 
 ## From CLI
 
 Dry-run:
 
 ```bash
-python manage.py netbox_unifi_sync_run --dry-run --json
+python manage.py netbox_unifi_run --dry-run --json
 ```
 
 Full sync:
 
 ```bash
-python manage.py netbox_unifi_sync_run --json
+python manage.py netbox_unifi_run --json
 ```
 
 Cleanup run:
 
 ```bash
-python manage.py netbox_unifi_sync_run --cleanup
+python manage.py netbox_unifi_run --cleanup
 ```
 
 Flags:

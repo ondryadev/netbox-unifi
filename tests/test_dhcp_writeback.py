@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from netbox_unifi_sync.services.sync.ipam import set_unifi_device_static_ip
+from netbox_unifi.services.sync.ipam import set_unifi_device_static_ip
 
 
 class FakeUnifi:

@@ -1,10 +1,10 @@
-# netbox-unifi-sync Wiki
+# netbox-unifi Wiki
 
-`netbox-unifi-sync` er et NetBox plugin til UniFi -> NetBox sync.
+`netbox-unifi` er et NetBox plugin til UniFi -> NetBox sync.
 
 ## Diagrammer
 
-![Overview](https://raw.githubusercontent.com/unifi2netbox/netbox-unifi-sync/main/docs/assets/netbox-unifi-sync-overview.svg)
+![Overview](https://raw.githubusercontent.com/ondryadev/netbox-unifi/main/docs/assets/netbox-unifi-overview.svg)
 
 ```mermaid
 flowchart LR
@@ -23,8 +23,8 @@ flowchart LR
 
 ## Source docs in repository
 
-- [README](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/README.md)
-- [Server install](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/server-install.md)
-- [Configuration](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/configuration.md)
-- [Troubleshooting](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/troubleshooting.md)
-- [Release](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/release.md)
+- [README](https://github.com/ondryadev/netbox-unifi/blob/main/README.md)
+- [Server install](https://github.com/ondryadev/netbox-unifi/blob/main/docs/server-install.md)
+- [Configuration](https://github.com/ondryadev/netbox-unifi/blob/main/docs/configuration.md)
+- [Troubleshooting](https://github.com/ondryadev/netbox-unifi/blob/main/docs/troubleshooting.md)
+- [Release](https://github.com/ondryadev/netbox-unifi/blob/main/docs/release.md)

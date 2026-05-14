@@ -2,15 +2,15 @@
 
 This plugin is published as:
 
-- package name: `netbox-unifi-sync`
-- install command: `pip install netbox-unifi-sync`
-- project URL: <https://pypi.org/project/netbox-unifi-sync/>
+- package name: `netbox-unifi`
+- install command: `pip install netbox-unifi`
+- project URL: <https://pypi.org/project/netbox-unifi/>
 
 ## Maintainer: Release to PyPI
 
 1. Bump version in:
    - `pyproject.toml` (`[project].version`)
-   - `netbox_unifi_sync/version.py` (`__version__`)
+   - `netbox_unifi/version.py` (`__version__`)
    - `netbox-plugin.yaml` (`compatibility[].release`)
 2. Configure **PyPI Trusted Publisher** (OIDC) for this repository/workflow if not already configured.
 3. Create tag `vX.Y.Z` either:
@@ -28,11 +28,11 @@ git push origin vX.Y.Z
 ## One-Time Setup
 
 1. Create project on PyPI:
-   - `netbox-unifi-sync`
+   - `netbox-unifi`
 2. Configure **PyPI Trusted Publisher** (GitHub OIDC) with:
-   - **PyPI Project Name**: `netbox-unifi-sync`
-   - **Owner**: `unifi2netbox`
-   - **Repository name**: `netbox-unifi-sync`
+   - **PyPI Project Name**: `netbox-unifi`
+   - **Owner**: `ondryadev`
+   - **Repository name**: `netbox-unifi`
    - **Workflow name**: `publish-python-package.yml`
    - **Environment name**: `pypi`
 3. In GitHub repository settings, create environment:
@@ -46,7 +46,7 @@ https://docs.github.com/actions/deployment/security-hardening-your-deployments/a
 Keep versions aligned in both files:
 
 - `pyproject.toml` -> `[project].version`
-- `netbox_unifi_sync/version.py` -> `__version__`
+- `netbox_unifi/version.py` -> `__version__`
 - `netbox-plugin.yaml` -> `compatibility[].release`
 
 Tag must match version exactly: `vX.Y.Z`.
@@ -94,7 +94,7 @@ Actions with the same tag.
 ## Recommended CLI Commands (alternative)
 
 ```bash
-git add pyproject.toml netbox_unifi_sync/version.py netbox-plugin.yaml CHANGELOG.md
+git add pyproject.toml netbox_unifi/version.py netbox-plugin.yaml CHANGELOG.md
 git commit -m "Release vX.Y.Z"
 git push origin main
 git tag -a vX.Y.Z -m "Release vX.Y.Z"
@@ -122,6 +122,6 @@ Use (only for fallback without OIDC):
 After publish:
 
 ```bash
-python -m pip index versions netbox-unifi-sync
-pip install netbox-unifi-sync
+python -m pip index versions netbox-unifi
+pip install netbox-unifi
 ```

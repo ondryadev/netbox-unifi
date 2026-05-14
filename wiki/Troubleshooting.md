@@ -4,11 +4,11 @@
 
 Check:
 
-- `PLUGINS = ["netbox_unifi_sync"]`
+- `PLUGINS = ["netbox_unifi"]`
 - Migrations applied:
 
 ```bash
-python manage.py showmigrations netbox_unifi_sync
+python manage.py showmigrations netbox_unifi
 ```
 
 ## Sync runs but devices are skipped
@@ -22,7 +22,7 @@ Validate UniFi site names vs NetBox site names and add mapping rows.
 This only occurs with plugin version 0.1.x which used HTTP self-calls to NetBox. Since v0.2.0 the plugin uses the Django ORM directly — no internal HTTP call is needed. Upgrade to the latest version:
 
 ```bash
-pip install --upgrade netbox-unifi-sync
+pip install --upgrade netbox-unifi
 python manage.py migrate
 # restart netbox + netbox-worker
 ```
@@ -37,4 +37,4 @@ Check exact publisher tuple in PyPI:
 
 Bump version and publish new artifacts.
 
-Reference: [docs/troubleshooting.md](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/troubleshooting.md)
+Reference: [docs/troubleshooting.md](https://github.com/ondryadev/netbox-unifi/blob/main/docs/troubleshooting.md)

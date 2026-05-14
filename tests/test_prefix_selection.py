@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from netbox_unifi_sync.services import sync_engine
+from netbox_unifi.services import sync_engine
 
 
 class FakeListEndpoint:

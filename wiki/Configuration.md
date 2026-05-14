@@ -47,6 +47,6 @@ dashboard/run detail pages.
 
 ## Optional bootstrap in PLUGINS_CONFIG
 
-You can pre-seed defaults via `PLUGINS_CONFIG["netbox_unifi_sync"]`, but UI models are the authoritative runtime state.
+You can pre-seed defaults via `PLUGINS_CONFIG["netbox_unifi"]`, but UI models are the authoritative runtime state.
 
-Reference: [docs/configuration.md](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/configuration.md)
+Reference: [docs/configuration.md](https://github.com/ondryadev/netbox-unifi/blob/main/docs/configuration.md)

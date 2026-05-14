@@ -19,7 +19,7 @@ This error indicates an outdated plugin version (0.1.3 or earlier) that used a h
 Upgrade to fix:
 
 ```bash
-pip install --upgrade netbox-unifi-sync
+pip install --upgrade netbox-unifi
 python manage.py migrate
 # restart netbox + netbox-worker
 ```
@@ -31,7 +31,7 @@ This error only appeared in plugin versions 0.1.x which used internal HTTP self-
 Upgrade to the latest version to resolve this:
 
 ```bash
-pip install --upgrade netbox-unifi-sync
+pip install --upgrade netbox-unifi
 python manage.py migrate
 # restart netbox + netbox-worker
 ```
@@ -63,31 +63,31 @@ For `login` mode:
 Check:
 
 - plugin enabled in NetBox config:
-  - `PLUGINS = ["netbox_unifi_sync"]`
+  - `PLUGINS = ["netbox_unifi"]`
 - plugin package installed in both `netbox` and `netbox-worker`
 - migrations applied
 
 Useful checks:
 
 ```bash
-python manage.py showmigrations netbox_unifi_sync
+python manage.py showmigrations netbox_unifi
 python manage.py check
 ```
 
 ### `Missing permission` on the sync dashboard
 
-The dashboard requires `view` permission on `netbox_unifi_sync.SyncRun`.
-Queueing a manual sync requires `add` permission on `netbox_unifi_sync.SyncRun`.
+The dashboard requires `view` permission on `netbox_unifi.SyncRun`.
+Queueing a manual sync requires `add` permission on `netbox_unifi.SyncRun`.
 
 The plugin still accepts the legacy custom permission
-`netbox_unifi_sync.run_sync`, but normal NetBox object permissions should use
-`netbox_unifi_sync.add_syncrun` for manual queueing.
+`netbox_unifi.run_sync`, but normal NetBox object permissions should use
+`netbox_unifi.add_syncrun` for manual queueing.
 
 ### `Missing permission` when testing a controller
 
 Testing controller connectivity requires `change` permission on
-`netbox_unifi_sync.UnifiController`. The legacy custom permission
-`netbox_unifi_sync.test_controller` is still accepted for compatibility.
+`netbox_unifi.UnifiController`. The legacy custom permission
+`netbox_unifi.test_controller` is still accepted for compatibility.
 
 ### No devices created
 
@@ -126,13 +126,13 @@ Check:
 
 ```bash
 # Dry-run from NetBox runtime
-python manage.py netbox_unifi_sync_run --dry-run --json
+python manage.py netbox_unifi_run --dry-run --json
 
 # Cleanup run
-python manage.py netbox_unifi_sync_run --cleanup
+python manage.py netbox_unifi_run --cleanup
 
 # Migration state
-python manage.py showmigrations netbox_unifi_sync
+python manage.py showmigrations netbox_unifi
 ```
 
 ## When opening an issue

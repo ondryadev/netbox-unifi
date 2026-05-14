@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from netbox_unifi_sync.services.sync import ipam
+from netbox_unifi.services.sync import ipam
 
 
 def _reset_ipam_state():

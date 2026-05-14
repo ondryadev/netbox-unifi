@@ -2,12 +2,12 @@
 
 ## Overview
 
-![Architecture overview](assets/netbox-unifi-sync-overview.svg)
+![Architecture overview](assets/netbox-unifi-overview.svg)
 
 ```mermaid
 flowchart LR
-    U["UniFi Controller(s)"] --> C["netbox_unifi_sync/services/unifi/unifi.py<br/>auth + request + retry"]
-    C --> E["netbox_unifi_sync/services/sync_engine.py<br/>normalize + mapping"]
+    U["UniFi Controller(s)"] --> C["netbox_unifi/services/unifi/unifi.py<br/>auth + request + retry"]
+    C --> E["netbox_unifi/services/sync_engine.py<br/>normalize + mapping"]
     E --> N["Django ORM (direct DB access)"]
     N --> D["NetBox DCIM/IPAM/Wireless"]
     P["Plugin UI Models<br/>Settings, Controllers, SiteMappings"] --> E
@@ -60,7 +60,7 @@ Default thread limits:
 
 ## Shared Caches / Locks
 
-Main thread-safe structures in `netbox_unifi_sync/services/sync_engine.py`:
+Main thread-safe structures in `netbox_unifi/services/sync_engine.py`:
 - `vrf_cache` + per-name locks
 - `_custom_field_cache`
 - `_tag_cache`
@@ -72,7 +72,7 @@ Main thread-safe structures in `netbox_unifi_sync/services/sync_engine.py`:
 ## Sync Flow (high-level)
 
 1. Load runtime config from plugin models (`Settings`, `Controllers`, `Site mappings`)
-2. Merge optional non-secret bootstrap defaults from `PLUGINS_CONFIG["netbox_unifi_sync"]`
+2. Merge optional non-secret bootstrap defaults from `PLUGINS_CONFIG["netbox_unifi"]`
 3. Resolve NetBox tenant/roles/sites
 4. Process all configured UniFi controllers in parallel
 5. Per site:
@@ -82,7 +82,7 @@ Main thread-safe structures in `netbox_unifi_sync/services/sync_engine.py`:
 6. Optional cleanup (`cleanup_enabled=true`)
 7. Repeat if scheduler is enabled and interval is configured
 
-![Sync run flow](assets/netbox-unifi-sync-runflow.svg)
+![Sync run flow](assets/netbox-unifi-runflow.svg)
 
 ```mermaid
 flowchart TD

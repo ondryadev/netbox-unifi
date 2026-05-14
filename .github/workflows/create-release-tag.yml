@@ -85,7 +85,7 @@ jobs:
 
           version="${{ steps.version.outputs.version }}"
           pyproject_version="$(awk -F\" '/^version = "/ {print $2; exit}' pyproject.toml)"
-          module_version="$(awk -F\" '/^__version__ = "/ {print $2; exit}' netbox_unifi_sync/version.py)"
+          module_version="$(awk -F\" '/^__version__ = "/ {print $2; exit}' netbox_unifi/version.py)"
           plugin_release="$(awk '/release:/ {print $2; exit}' netbox-plugin.yaml)"
 
           if [[ "$pyproject_version" != "$version" ]]; then
@@ -93,7 +93,7 @@ jobs:
             exit 1
           fi
           if [[ "$module_version" != "$version" ]]; then
-            echo "netbox_unifi_sync/version.py version '$module_version' does not match '$version'." >&2
+            echo "netbox_unifi/version.py version '$module_version' does not match '$version'." >&2
             exit 1
           fi
           if [[ "$plugin_release" != "$version" ]]; then

@@ -1,6 +1,6 @@
 # Server Installation Guide
 
-This guide describes how to install `netbox_unifi_sync` on a real NetBox server.
+This guide describes how to install `netbox_unifi` on a real NetBox server.
 
 ## Prerequisites
 
@@ -15,17 +15,17 @@ This guide describes how to install `netbox_unifi_sync` on a real NetBox server.
 ### 1. Install from PyPI
 
 ```bash
-/opt/netbox/venv/bin/pip install netbox-unifi-sync
+/opt/netbox/venv/bin/pip install netbox-unifi
 ```
 
 PyPI project:
-<https://pypi.org/project/netbox-unifi-sync/>
+<https://pypi.org/project/netbox-unifi/>
 
 For local development (editable install from source):
 
 ```bash
-git clone https://github.com/unifi2netbox/netbox-unifi-sync.git
-/opt/netbox/venv/bin/pip install -e /path/to/netbox-unifi-sync
+git clone https://github.com/ondryadev/netbox-unifi.git
+/opt/netbox/venv/bin/pip install -e /path/to/netbox-unifi
 ```
 
 ### 2. Configure NetBox
@@ -33,10 +33,10 @@ git clone https://github.com/unifi2netbox/netbox-unifi-sync.git
 Edit `/opt/netbox/netbox/netbox/configuration.py`:
 
 ```python
-PLUGINS = ["netbox_unifi_sync"]
+PLUGINS = ["netbox_unifi"]
 
 PLUGINS_CONFIG = {
-    "netbox_unifi_sync": {}
+    "netbox_unifi": {}
 }
 ```
 
@@ -63,8 +63,8 @@ Then open NetBox UI and verify `Plugins -> UniFi Sync` exists.
 ### 1. Clone repos
 
 ```bash
-git clone https://github.com/unifi2netbox/netbox-unifi-sync.git
-cd netbox-unifi-sync
+git clone https://github.com/ondryadev/netbox-unifi.git
+cd netbox-unifi
 git clone -b release https://github.com/netbox-community/netbox-docker.git .netbox-docker
 ```
 
@@ -73,7 +73,7 @@ git clone -b release https://github.com/netbox-community/netbox-docker.git .netb
 Add package pin in `netbox-docker` root:
 
 ```bash
-echo "netbox-unifi-sync" >> .netbox-docker/local_requirements.txt
+echo "netbox-unifi" >> .netbox-docker/local_requirements.txt
 cp deploy/netbox-docker/configuration/plugins.py .netbox-docker/configuration/plugins.py
 ```
 
@@ -128,14 +128,14 @@ docker compose exec netbox /opt/netbox/netbox/manage.py migrate
 ### 8. Validate
 
 ```bash
-docker compose exec netbox /opt/netbox/netbox/manage.py netbox_unifi_sync_run --dry-run --json
+docker compose exec netbox /opt/netbox/netbox/manage.py netbox_unifi_run --dry-run --json
 ```
 
 ## Runtime configuration model
 
 There are two layers:
 
-1. `PLUGINS_CONFIG["netbox_unifi_sync"]`: optional bootstrap/default values.
+1. `PLUGINS_CONFIG["netbox_unifi"]`: optional bootstrap/default values.
 2. Plugin UI models (authoritative runtime state):
    - Global settings
    - Controllers
@@ -168,7 +168,7 @@ UniFi credentials should be stored only in `Controllers` UI entries.
 From PyPI install:
 
 ```bash
-/opt/netbox/venv/bin/pip install --upgrade netbox-unifi-sync
+/opt/netbox/venv/bin/pip install --upgrade netbox-unifi
 /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py migrate
 # restart web + worker
 ```
@@ -176,7 +176,7 @@ From PyPI install:
 From source checkout:
 
 ```bash
-cd /path/to/netbox-unifi-sync
+cd /path/to/netbox-unifi
 git pull
 /opt/netbox/venv/bin/pip install -e .
 /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py migrate

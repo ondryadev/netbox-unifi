@@ -24,8 +24,8 @@ Yes. Add multiple enabled controllers in `Plugins -> UniFi Sync -> Controllers`.
 ### Can I run sync manually from UI?
 
 Yes. Open `Plugins -> UniFi Sync -> Sync Dashboard` and use `Run now`.
-The user needs `view` on `netbox_unifi_sync.SyncRun` to open the dashboard and
-`add` on `netbox_unifi_sync.SyncRun` to queue a manual sync.
+The user needs `view` on `netbox_unifi.SyncRun` to open the dashboard and
+`add` on `netbox_unifi.SyncRun` to queue a manual sync.
 
 ## Data and Mapping
 
@@ -74,12 +74,12 @@ Yes. SSL verification defaults to `true`.
 ### How do I run a dry-run?
 
 - UI: enable dry-run on dashboard action form
-- CLI: `python manage.py netbox_unifi_sync_run --dry-run --json`
+- CLI: `python manage.py netbox_unifi_run --dry-run --json`
 
 ### How do I run cleanup?
 
 - UI: request cleanup from dashboard action form
-- CLI: `python manage.py netbox_unifi_sync_run --cleanup`
+- CLI: `python manage.py netbox_unifi_run --cleanup`
 
 ### How do I troubleshoot missing data?
 

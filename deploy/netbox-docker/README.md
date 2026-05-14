@@ -1,12 +1,12 @@
-# NetBox Docker Test Setup (`netbox_unifi_sync`)
+# NetBox Docker Test Setup (`netbox_unifi`)
 
 This folder contains a reproducible `netbox-docker` setup for local plugin validation.
 
 ## 1) Clone repositories
 
 ```bash
-git clone https://github.com/unifi2netbox/netbox-unifi-sync.git
-cd netbox-unifi-sync
+git clone https://github.com/ondryadev/netbox-unifi.git
+cd netbox-unifi
 git clone -b release https://github.com/netbox-community/netbox-docker.git .netbox-docker
 ```
 
@@ -15,7 +15,7 @@ git clone -b release https://github.com/netbox-community/netbox-docker.git .netb
 Add package pin and plugin config:
 
 ```bash
-echo "netbox-unifi-sync" >> .netbox-docker/local_requirements.txt
+echo "netbox-unifi" >> .netbox-docker/local_requirements.txt
 cp deploy/netbox-docker/configuration/plugins.py .netbox-docker/configuration/plugins.py
 ```
 
@@ -37,7 +37,7 @@ cp deploy/netbox-docker/docker-compose.override.yml .netbox-docker/docker-compos
 cp deploy/netbox-docker/configuration/plugins.py .netbox-docker/configuration/plugins.py
 ```
 
-`plugins.py` is imported by NetBox runtime and enables `netbox_unifi_sync`.
+`plugins.py` is imported by NetBox runtime and enables `netbox_unifi`.
 
 ## 4) Configure plugin path env
 
@@ -48,7 +48,7 @@ cp deploy/netbox-docker/env.netbox-plugin.example .netbox-docker/.env.plugin
 Edit `.netbox-docker/.env.plugin` and set absolute path:
 
 ```bash
-UNIFI2NETBOX_PLUGIN_PATH=/absolute/path/to/netbox-unifi-sync
+UNIFI2NETBOX_PLUGIN_PATH=/absolute/path/to/netbox-unifi
 ```
 
 Load vars into `netbox-docker` env:
@@ -92,7 +92,7 @@ docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser
 CLI validation:
 
 ```bash
-docker compose exec netbox /opt/netbox/netbox/manage.py netbox_unifi_sync_run --dry-run --json
+docker compose exec netbox /opt/netbox/netbox/manage.py netbox_unifi_run --dry-run --json
 ```
 
 ## Notes

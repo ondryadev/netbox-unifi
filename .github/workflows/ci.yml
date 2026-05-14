@@ -24,10 +24,10 @@ jobs:
         run: pip install ruff bandit
 
       - name: Lint (ruff)
-        run: ruff check netbox_unifi_sync/
+        run: ruff check netbox_unifi/
 
       - name: Security scan (bandit)
-        run: bandit -r netbox_unifi_sync/ -ll
+        run: bandit -r netbox_unifi/ -ll
 
   test:
     runs-on: ubuntu-latest

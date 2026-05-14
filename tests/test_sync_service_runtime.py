@@ -1,4 +1,4 @@
-from netbox_unifi_sync.services import sync_service
+from netbox_unifi.services import sync_service
 
 
 def test_execute_sync_with_overrides_does_not_load_plugins_config(monkeypatch):

@@ -1,19 +1,19 @@
 # NetBox Plugin Mode
 
-This project ships as a NetBox plugin package named `netbox_unifi_sync`.
+This project ships as a NetBox plugin package named `netbox_unifi`.
 
 ## Install
 
 From your NetBox Python environment:
 
 ```bash
-pip install netbox-unifi-sync
+pip install netbox-unifi
 ```
 
 For development (editable):
 
 ```bash
-pip install -e /path/to/netbox-unifi-sync
+pip install -e /path/to/netbox-unifi
 ```
 
 ## NetBox configuration
@@ -21,10 +21,10 @@ pip install -e /path/to/netbox-unifi-sync
 In `configuration.py`:
 
 ```python
-PLUGINS = ["netbox_unifi_sync"]
+PLUGINS = ["netbox_unifi"]
 
 PLUGINS_CONFIG = {
-    "netbox_unifi_sync": {}
+    "netbox_unifi": {}
 }
 ```
 
@@ -36,9 +36,9 @@ Runtime configuration is managed in NetBox UI (`Plugins -> UniFi Sync`).
 - CLI:
 
 ```bash
-python manage.py netbox_unifi_sync_run --dry-run --json
-python manage.py netbox_unifi_sync_run --json
-python manage.py netbox_unifi_sync_run --cleanup
+python manage.py netbox_unifi_run --dry-run --json
+python manage.py netbox_unifi_run --json
+python manage.py netbox_unifi_run --cleanup
 ```
 
 CLI flags:
@@ -61,30 +61,30 @@ Mounted under `/plugins/unifi-sync/api/`:
 
 - `GET /plugins/unifi-sync/api/status/`
   - Returns plugin status and latest run summary.
-  - Permission: `netbox_unifi_sync.view_syncrun`
+  - Permission: `netbox_unifi.view_syncrun`
 - `POST /plugins/unifi-sync/api/controllers/<pk>/test/`
   - Tests one controller and returns JSON status/details.
-  - Permission: `netbox_unifi_sync.change_unificontroller`
+  - Permission: `netbox_unifi.change_unificontroller`
 
 ## Permissions
 
 For regular NetBox users, use NetBox object permissions:
 
-- Dashboard/run history/status API: `view` on `netbox_unifi_sync.SyncRun`
-- Manual sync queueing: `add` on `netbox_unifi_sync.SyncRun`
-- Controllers: `view/add/change/delete` on `netbox_unifi_sync.UnifiController`
-- Controller connectivity test: `change` on `netbox_unifi_sync.UnifiController`
-- Site mappings: `view/add/change/delete` on `netbox_unifi_sync.SiteMapping`
-- Settings: `view/change` on `netbox_unifi_sync.GlobalSyncSettings`
-- Audit log: `view` on `netbox_unifi_sync.PluginAuditEvent`
+- Dashboard/run history/status API: `view` on `netbox_unifi.SyncRun`
+- Manual sync queueing: `add` on `netbox_unifi.SyncRun`
+- Controllers: `view/add/change/delete` on `netbox_unifi.UnifiController`
+- Controller connectivity test: `change` on `netbox_unifi.UnifiController`
+- Site mappings: `view/add/change/delete` on `netbox_unifi.SiteMapping`
+- Settings: `view/change` on `netbox_unifi.GlobalSyncSettings`
+- Audit log: `view` on `netbox_unifi.PluginAuditEvent`
 
 Compatibility custom permissions still defined by the plugin:
 
-- `netbox_unifi_sync.run_sync` (accepted by the dashboard POST handler)
-- `netbox_unifi_sync.run_cleanup`
-- `netbox_unifi_sync.test_controller`
+- `netbox_unifi.run_sync` (accepted by the dashboard POST handler)
+- `netbox_unifi.run_cleanup`
+- `netbox_unifi.test_controller`
 
 In NetBox object permissions, queueing a sync is best represented as
-`netbox_unifi_sync.add_syncrun`.
+`netbox_unifi.add_syncrun`.
 Testing a controller is best represented as
-`netbox_unifi_sync.change_unificontroller`.
+`netbox_unifi.change_unificontroller`.

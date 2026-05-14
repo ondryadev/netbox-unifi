@@ -1,5 +1,5 @@
 version: 0.1
-package_name: netbox-unifi-sync
+package_name: netbox-unifi
 compatibility:
   - release: 0.3.23
     netbox_min: 4.2.0

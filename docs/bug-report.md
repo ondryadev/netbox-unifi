@@ -1,13 +1,13 @@
 # Bug Report Guide
 
-Use this guide when reporting defects in `netbox_unifi_sync`.
+Use this guide when reporting defects in `netbox_unifi`.
 
 ## Required Information
 
 Include:
 
 - NetBox version
-- Plugin version (`pip show netbox-unifi-sync` or `netbox_unifi_sync/version.py`)
+- Plugin version (`pip show netbox-unifi` or `netbox_unifi/version.py`)
 - Deployment mode (`venv` or `netbox-docker`)
 - Python version in NetBox + worker runtime
 - Exact failing action (UI run, scheduler run, CLI run, release workflow, etc.)
@@ -30,7 +30,7 @@ Do not include secrets (API keys, passwords, MFA secrets, tokens, cookies).
 From repository root:
 
 ```bash
-docker run --rm -v "$PWD":/work -w /work python:3.12 bash -lc "python -m pip install --upgrade pip && pip install -r requirements.txt -e . ruff bandit && ruff check netbox_unifi_sync/ && bandit -r netbox_unifi_sync/ -ll"
+docker run --rm -v "$PWD":/work -w /work python:3.12 bash -lc "python -m pip install --upgrade pip && pip install -r requirements.txt -e . ruff bandit && ruff check netbox_unifi/ && bandit -r netbox_unifi/ -ll"
 docker run --rm -v "$PWD":/work -w /work python:3.11 bash -lc "python -m pip install --upgrade pip && pip install -r requirements.txt -e . pytest && pytest -q"
 docker run --rm -v "$PWD":/work -w /work python:3.12 bash -lc "python -m pip install --upgrade pip && pip install -r requirements.txt -e . pytest && pytest -q"
 ```
@@ -44,9 +44,9 @@ docker run --rm -v "$PWD":/work -w /work python:3.12 bash -lc "python -m pip ins
 ## NetBox Runtime Checks
 
 ```bash
-python manage.py showmigrations netbox_unifi_sync
+python manage.py showmigrations netbox_unifi
 python manage.py check
-python manage.py netbox_unifi_sync_run --dry-run --json
+python manage.py netbox_unifi_run --dry-run --json
 ```
 
 ## Useful Attachments

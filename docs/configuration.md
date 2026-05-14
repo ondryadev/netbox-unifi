@@ -1,6 +1,6 @@
 # Configuration Reference
 
-`netbox_unifi_sync` is configured in NetBox UI first.  
+`netbox_unifi` is configured in NetBox UI first.  
 `PLUGINS_CONFIG` is optional bootstrap/default input.
 
 ## Configuration Layers
@@ -9,7 +9,7 @@
    - `Settings` (`GlobalSyncSettings`)
    - `Controllers` (`UnifiController`)
    - `Site mappings` (`SiteMapping`)
-2. Optional bootstrap defaults from `PLUGINS_CONFIG["netbox_unifi_sync"]`
+2. Optional bootstrap defaults from `PLUGINS_CONFIG["netbox_unifi"]`
 3. Internal compatibility mapping into legacy engine keys (handled by plugin services)
 
 Credential policy:
@@ -34,10 +34,10 @@ Before first sync, set:
 You can keep this minimal:
 
 ```python
-PLUGINS = ["netbox_unifi_sync"]
+PLUGINS = ["netbox_unifi"]
 
 PLUGINS_CONFIG = {
-    "netbox_unifi_sync": {}
+    "netbox_unifi": {}
 }
 ```
 
@@ -45,7 +45,7 @@ You can also preseed defaults:
 
 ```python
 PLUGINS_CONFIG = {
-    "netbox_unifi_sync": {
+    "netbox_unifi": {
         "verify_ssl": True,
         "default_site": "",
         "dry_run": False,
@@ -215,7 +215,7 @@ The plugin maps UI state into these internal engine keys (for compatibility/debu
 
 ## Advanced: Optional Bootstrap Keys
 
-These are valid in `PLUGINS_CONFIG["netbox_unifi_sync"]` when you need preseed defaults:
+These are valid in `PLUGINS_CONFIG["netbox_unifi"]` when you need preseed defaults:
 
 - `unifi_url` or `unifi_urls`
 - `enabled`

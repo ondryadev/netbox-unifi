@@ -2,16 +2,16 @@
 
 Package:
 
-- Name: `netbox-unifi-sync`
-- Install: `pip install netbox-unifi-sync`
+- Name: `netbox-unifi`
+- Install: `pip install netbox-unifi`
 
 ## Trusted Publisher (PyPI + GitHub OIDC)
 
 PyPI publisher must match exactly:
 
-- PyPI Project Name: `netbox-unifi-sync`
-- Owner: `unifi2netbox`
-- Repository: `netbox-unifi-sync`
+- PyPI Project Name: `netbox-unifi`
+- Owner: `ondryadev`
+- Repository: `netbox-unifi`
 - Workflow: `publish-python-package.yml`
 - Environment: `pypi`
 
@@ -19,7 +19,7 @@ PyPI publisher must match exactly:
 
 1. Bump version in:
    - `pyproject.toml` (`[project].version`)
-   - `netbox_unifi_sync/version.py` (`__version__`)
+   - `netbox_unifi/version.py` (`__version__`)
    - `netbox-plugin.yaml` (`compatibility[].release`)
 2. Configure PyPI Trusted Publisher (OIDC) for this repository/workflow.
 3. Create tag `vX.Y.Z` either:
@@ -38,7 +38,7 @@ git push origin vX.Y.Z
 
 1. Bump version in:
    - `pyproject.toml`
-   - `netbox_unifi_sync/version.py`
+   - `netbox_unifi/version.py`
    - `netbox-plugin.yaml` (`compatibility[].release`)
 2. Commit + push `main`
 3. Create tag `vX.Y.Z`:
@@ -55,4 +55,4 @@ Note:
 
 If upload says filename already used/deleted, publish a new version (e.g. `0.1.2` -> `0.1.3`).
 
-Reference: [docs/release.md](https://github.com/unifi2netbox/netbox-unifi-sync/blob/main/docs/release.md)
+Reference: [docs/release.md](https://github.com/ondryadev/netbox-unifi/blob/main/docs/release.md)

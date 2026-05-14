@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "netbox-unifi-sync"
+name = "netbox-unifi"
 version = "0.3.23"
 description = "Production-ready NetBox plugin for UniFi synchronization"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -33,32 +33,32 @@ dependencies = [
 ]
 
 [project.entry-points."netbox.plugins"]
-netbox_unifi_sync = "netbox_unifi_sync"
+netbox_unifi = "netbox_unifi"
 
 [project.urls]
-Homepage = "https://github.com/unifi2netbox/netbox-unifi-sync"
-Repository = "https://github.com/unifi2netbox/netbox-unifi-sync"
-Issues = "https://github.com/unifi2netbox/netbox-unifi-sync/issues"
+Homepage = "https://github.com/ondryadev/netbox-unifi"
+Repository = "https://github.com/ondryadev/netbox-unifi"
+Issues = "https://github.com/ondryadev/netbox-unifi/issues"
 
 [tool.setuptools]
 include-package-data = false
 
 [tool.setuptools.package-data]
-"netbox_unifi_sync" = [
-  "templates/netbox_unifi_sync/*.html",
+"netbox_unifi" = [
+  "templates/netbox_unifi/*.html",
   "migrations/*.py",
   "management/commands/*.py",
 ]
-"netbox_unifi_sync.services" = ["data/*.json"]
+"netbox_unifi.services" = ["data/*.json"]
 
 [tool.setuptools.packages.find]
 namespaces = false
-include = ["netbox_unifi_sync*"]
+include = ["netbox_unifi*"]
 exclude = [
   "tests*",
   "docs*",
   "lxc*",
   "tools*",
   "deploy*",
-  "netbox_unifi_sync.templates*",
+  "netbox_unifi.templates*",
 ]

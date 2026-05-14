@@ -14,7 +14,7 @@ Denne checkliste er lavet til release-gating før produktion.
 
 - [ ] Lint: `ruff check .` er grøn.
 - [ ] Unit/integration tests: `pytest -q` er grøn.
-- [ ] Security scan (app-kode): `bandit -q -r netbox_unifi_sync/services/sync_engine.py netbox_unifi_sync/services/sync netbox_unifi_sync/services/unifi` er grøn.
+- [ ] Security scan (app-kode): `bandit -q -r netbox_unifi/services/sync_engine.py netbox_unifi/services/sync netbox_unifi/services/unifi` er grøn.
 - [ ] Testresultater er dokumenteret i release-notes/PR.
 
 ## 3. Sikkerhed

@@ -6,10 +6,10 @@ Denne mappe indeholder Wiki-sider som Markdown-kilde.
 
 ```bash
 cd /tmp
-git clone git@github.com:unifi2netbox/netbox-unifi-sync.wiki.git
-cd netbox-unifi-sync.wiki
+git clone git@github.com:ondryadev/netbox-unifi.wiki.git
+cd netbox-unifi.wiki
 rm -f *.md
-cp /path/to/netbox-unifi-sync/wiki/*.md .
+cp /path/to/netbox-unifi/wiki/*.md .
 git add .
 git commit -m "Update wiki pages"
 git push origin main

@@ -1,4 +1,4 @@
-# netbox-unifi-sync
+# netbox-unifi
 
 > [!WARNING]
 > We are aware that there are issues in the codebase.
@@ -6,7 +6,7 @@
 > Fixes and improvements are implemented when time allows.
 > Do not deploy in production without proper validation.
 
-`netbox_unifi_sync` is a NetBox 4.2+ plugin that runs UniFi -> NetBox sync jobs inside NetBox workers.
+`netbox_unifi` is a NetBox 4.2+ plugin that runs UniFi -> NetBox sync jobs inside NetBox workers.
 
 ---
 
@@ -18,11 +18,11 @@
 
 ## Visual Overview
 
-![netbox-unifi-sync overview](docs/assets/netbox-unifi-sync-overview.svg)
+![netbox-unifi overview](docs/assets/netbox-unifi-overview.svg)
 
 ```mermaid
 flowchart LR
-    U["UniFi Controller(s)"] --> P["netbox_unifi_sync plugin<br/>NetBox Jobs (RQ)"]
+    U["UniFi Controller(s)"] --> P["netbox_unifi plugin<br/>NetBox Jobs (RQ)"]
     P --> N["NetBox DCIM/IPAM/Wireless"]
     A["Plugin UI<br/>Settings/Controllers/Mappings"] --> P
 ```
@@ -138,16 +138,16 @@ flowchart TD
 ### 1. Install
 
 ```bash
-pip install netbox-unifi-sync
+pip install netbox-unifi
 ```
 
 PyPI project page:
-https://pypi.org/project/netbox-unifi-sync/
+https://pypi.org/project/netbox-unifi/
 
 For `netbox-docker`, add the package to `local_requirements.txt` before build:
 
 ```bash
-echo "netbox-unifi-sync" >> local_requirements.txt
+echo "netbox-unifi" >> local_requirements.txt
 ```
 
 > [!IMPORTANT]
@@ -159,10 +159,10 @@ echo "netbox-unifi-sync" >> local_requirements.txt
 ### 2. Enable plugin in NetBox
 
 ```python
-PLUGINS = ["netbox_unifi_sync"]
+PLUGINS = ["netbox_unifi"]
 
 PLUGINS_CONFIG = {
-    "netbox_unifi_sync": {}
+    "netbox_unifi": {}
 }
 ```
 
@@ -205,9 +205,9 @@ Plugins -> UniFi Sync -> Sync Dashboard -> Run now
 CLI:
 
 ```bash
-python manage.py netbox_unifi_sync_run --dry-run --json
-python manage.py netbox_unifi_sync_run
-python manage.py netbox_unifi_sync_run --cleanup
+python manage.py netbox_unifi_run --dry-run --json
+python manage.py netbox_unifi_run
+python manage.py netbox_unifi_run --cleanup
 ```
 
 > [!IMPORTANT]
@@ -249,20 +249,20 @@ Recommended intervals:
 
 For normal NetBox users, grant permissions through NetBox object permissions:
 
-- View dashboard/run history: `view` on `netbox_unifi_sync.SyncRun`
-- Queue a manual sync job: `add` on `netbox_unifi_sync.SyncRun`
-- Manage controllers: `view/add/change/delete` on `netbox_unifi_sync.UnifiController`
-- Test controller connectivity: `change` on `netbox_unifi_sync.UnifiController`
-- Manage site mappings: `view/add/change/delete` on `netbox_unifi_sync.SiteMapping`
-- Manage global settings: `view/change` on `netbox_unifi_sync.GlobalSyncSettings`
-- View audit log: `view` on `netbox_unifi_sync.PluginAuditEvent`
+- View dashboard/run history: `view` on `netbox_unifi.SyncRun`
+- Queue a manual sync job: `add` on `netbox_unifi.SyncRun`
+- Manage controllers: `view/add/change/delete` on `netbox_unifi.UnifiController`
+- Test controller connectivity: `change` on `netbox_unifi.UnifiController`
+- Manage site mappings: `view/add/change/delete` on `netbox_unifi.SiteMapping`
+- Manage global settings: `view/change` on `netbox_unifi.GlobalSyncSettings`
+- View audit log: `view` on `netbox_unifi.PluginAuditEvent`
 
-The legacy custom permission `netbox_unifi_sync.run_sync` is still accepted by
+The legacy custom permission `netbox_unifi.run_sync` is still accepted by
 the view for compatibility, but NetBox object permissions map naturally to
-`netbox_unifi_sync.add_syncrun`.
-The legacy custom permission `netbox_unifi_sync.test_controller` is also
+`netbox_unifi.add_syncrun`.
+The legacy custom permission `netbox_unifi.test_controller` is also
 accepted, but NetBox object permissions map naturally to
-`netbox_unifi_sync.change_unificontroller`.
+`netbox_unifi.change_unificontroller`.
 
 ---
 
@@ -287,7 +287,7 @@ accepted, but NetBox object permissions map naturally to
 - [Release and PyPI publish](docs/release.md)
 - [netbox-docker setup](deploy/netbox-docker/README.md)
 - [Wiki source pages](wiki/Home.md)
-- [GitHub Wiki](https://github.com/unifi2netbox/netbox-unifi-sync/wiki)
+- [GitHub Wiki](https://github.com/ondryadev/netbox-unifi/wiki)
 
 ---
 
@@ -295,7 +295,7 @@ accepted, but NetBox object permissions map naturally to
 
 1. Bump version in:
    - pyproject.toml (`[project].version`)
-   - netbox_unifi_sync/version.py (`__version__`)
+   - netbox_unifi/version.py (`__version__`)
    - netbox-plugin.yaml (`compatibility[].release`)
 2. Configure PyPI Trusted Publisher (OIDC) for this repository/workflow.
 3. Create tag `vX.Y.Z` either:

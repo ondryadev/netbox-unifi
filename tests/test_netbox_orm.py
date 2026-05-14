@@ -1,4 +1,4 @@
-from netbox_unifi_sync.services.sync.netbox_orm import _Endpoint
+from netbox_unifi.services.sync.netbox_orm import _Endpoint
 
 
 class IPRange:

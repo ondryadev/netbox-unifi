@@ -1,12 +1,12 @@
 """Tests for sync orchestration validation logic.
 
-Imports from netbox_unifi_sync.services._validation — a pure-Python module
+Imports from netbox_unifi.services._validation — a pure-Python module
 with no Django dependency, so no stubs or mocks are required.
 """
 import pytest
 from unittest.mock import MagicMock
 
-from netbox_unifi_sync.services._validation import (
+from netbox_unifi.services._validation import (
     SyncConfigurationError,
     validate_runtime_config,
 )

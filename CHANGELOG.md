@@ -95,7 +95,7 @@ MAC addresses from UniFi devices are now synced to NetBox interface objects.
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/services/sync_engine.py` | New `_set_interface_mac()` helper; port loop sets per-port MAC; device-MAC fallback to Port 1 |
+| `netbox_unifi/services/sync_engine.py` | New `_set_interface_mac()` helper; port loop sets per-port MAC; device-MAC fallback to Port 1 |
 
 ---
 
@@ -111,7 +111,7 @@ The Integration API path is now skipped entirely; the function falls through dir
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/services/sync/ipam.py` | Removed Integration API PATCH attempt; always use Legacy API for static IP |
+| `netbox_unifi/services/sync/ipam.py` | Removed Integration API PATCH attempt; always use Legacy API for static IP |
 
 ---
 
@@ -137,7 +137,7 @@ NetBox's `Interface.clean()` rejects `untagged_vlan` for non-access-mode interfa
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/services/sync_engine.py` | `first_private_ip` fallback; VPN purpose filter; `(name,purpose,vlanId)` dedup; removed `untagged_vlan` assignment |
+| `netbox_unifi/services/sync_engine.py` | `first_private_ip` fallback; VPN purpose filter; `(name,purpose,vlanId)` dedup; removed `untagged_vlan` assignment |
 
 ---
 
@@ -155,7 +155,7 @@ NetBox's `Interface.clean()` rejects `untagged_vlan` for non-access-mode interfa
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/services/sync_engine.py` | `sync_gateway_interfaces(unifi=None)` parameter; legacy networkconf fallback; updated call site |
+| `netbox_unifi/services/sync_engine.py` | `sync_gateway_interfaces(unifi=None)` parameter; legacy networkconf fallback; updated call site |
 
 ---
 
@@ -218,9 +218,9 @@ All sync operations (create / update / delete) are now written to NetBox's built
 
 ## [0.3.5] - 2026-02-27
 
-### Changed — **Refactor: consolidate `unifi2netbox/` into `netbox_unifi_sync/`**
+### Changed — **Refactor: consolidate `ondryadev/` into `netbox_unifi/`**
 
-The separate `unifi2netbox/` package has been removed. All sync logic is now consolidated under `netbox_unifi_sync/services/`, simplifying imports and deployment.
+The separate `ondryadev/` package has been removed. All sync logic is now consolidated under `netbox_unifi/services/`, simplifying imports and deployment.
 
 ---
 
@@ -318,7 +318,7 @@ expressions, and role mappings still require at least one entry.
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/forms.py` | New `_CommaSeparatedField`, `_OnePerLineField`, `_KeyValueField`; replaced `JSONTextAreaField`; renamed form fields |
+| `netbox_unifi/forms.py` | New `_CommaSeparatedField`, `_OnePerLineField`, `_KeyValueField`; replaced `JSONTextAreaField`; renamed form fields |
 
 ## [0.2.4] - 2026-02-26
 
@@ -338,12 +338,12 @@ set and normalises it to lowercase before saving, so manually entered values
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/forms.py` | Added `failed`; reordered choices to match NetBox UI order |
-| `netbox_unifi_sync/models.py` | Added `VALID_DEVICE_STATUSES` + validation in `clean()` |
+| `netbox_unifi/forms.py` | Added `failed`; reordered choices to match NetBox UI order |
+| `netbox_unifi/models.py` | Added `VALID_DEVICE_STATUSES` + validation in `clean()` |
 
 ## [0.2.3] - 2026-02-26
 
-### Added — **Feature parity with standalone unifi2netbox**
+### Added — **Feature parity with standalone ondryadev**
 
 Six settings that existed in the standalone CLI tool were missing from the
 plugin UI and DB model.  They have now been added to `GlobalSyncSettings`
@@ -363,15 +363,15 @@ plugin UI and DB model.  They have now been added to `GlobalSyncSettings`
 
 | File | Change |
 |---|---|
-| `netbox_unifi_sync/models.py` | Six new fields on `GlobalSyncSettings` |
-| `netbox_unifi_sync/migrations/0005_feature_parity.py` | New migration |
-| `netbox_unifi_sync/services/orchestrator.py` | `_build_override()` passes new fields |
-| `netbox_unifi_sync/configuration.py` | New keys in `DEFAULT_SETTINGS` and `_ENV_MAP` |
-| `netbox_unifi_sync/forms.py` | Widget overrides for `dhcp_ranges` and `netbox_device_status` |
+| `netbox_unifi/models.py` | Six new fields on `GlobalSyncSettings` |
+| `netbox_unifi/migrations/0005_feature_parity.py` | New migration |
+| `netbox_unifi/services/orchestrator.py` | `_build_override()` passes new fields |
+| `netbox_unifi/configuration.py` | New keys in `DEFAULT_SETTINGS` and `_ENV_MAP` |
+| `netbox_unifi/forms.py` | Widget overrides for `dhcp_ranges` and `netbox_device_status` |
 
 ### Migration
 
-Run `python manage.py migrate netbox_unifi_sync` to apply migration `0005`
+Run `python manage.py migrate netbox_unifi` to apply migration `0005`
 which adds the six new columns.  All columns have safe defaults so existing
 rows are migrated automatically without data loss.
 
@@ -423,8 +423,8 @@ _GUARANTEED = {
 
 | File | Change |
 |---|---|
-| `unifi2netbox/services/sync/netbox_orm.py` | Remove `full_clean()`; add `_fk_fields()` to rewrite FK ints to `_id` attnames |
-| `unifi2netbox/services/sync_engine.py` | Add `_GUARANTEED` field set to `get_postable_fields()` |
+| `ondryadev/services/sync/netbox_orm.py` | Remove `full_clean()`; add `_fk_fields()` to rewrite FK ints to `_id` attnames |
+| `ondryadev/services/sync_engine.py` | Add `_GUARANTEED` field set to `get_postable_fields()` |
 
 ## [0.2.1] - 2026-02-26
 
@@ -438,10 +438,10 @@ plugins installed via `pip`) did not work.
 **Required in every NetBox plugin:**
 ```toml
 [project.entry-points."netbox.plugins"]
-netbox_unifi_sync = "netbox_unifi_sync"
+netbox_unifi = "netbox_unifi"
 ```
 
-Manual installation via `PLUGINS = ["netbox_unifi_sync"]` in `configuration.py`
+Manual installation via `PLUGINS = ["netbox_unifi"]` in `configuration.py`
 continued to work, but the entry point is required for full standard compliance.
 
 ### Verified — NetBox plugin standard checklist
@@ -469,7 +469,7 @@ is needed.
 
 All NetBox reads and writes in `sync_engine.py`, `vrf.py`, and the surrounding
 helper modules now go through a thin Django ORM adapter
-(`unifi2netbox.services.sync.netbox_orm.build_netbox_orm_client()`).  The
+(`ondryadev.services.sync.netbox_orm.build_netbox_orm_client()`).  The
 adapter exposes the same `nb.dcim.devices.get(...)`, `.filter(...)`, `.all()`
 and `.create(...)` surface that the sync engine already used, so no logic in
 the sync engine needed to change.
@@ -490,7 +490,7 @@ the sync engine needed to change.
 
 ### Migration
 
-Run `python manage.py migrate netbox_unifi_sync` to apply migration `0004`
+Run `python manage.py migrate netbox_unifi` to apply migration `0004`
 which drops the `netbox_url` column.
 
 If you have `netbox_url` set in your `PLUGINS_CONFIG`, remove it — it is no
@@ -529,8 +529,8 @@ longer used.
   Endpoints are now mounted at `/plugins/unifi-sync/api/` and return JSON responses.
 
 ### Changed
-- `api/urls.py` `app_name` corrected from `"netbox_unifi_sync-api"` (dash breaks Django
-  namespace resolution) to `"netbox_unifi_sync_api"`.
+- `api/urls.py` `app_name` corrected from `"netbox_unifi-api"` (dash breaks Django
+  namespace resolution) to `"netbox_unifi_api"`.
 
 ## [0.1.8] - 2026-02-26
 

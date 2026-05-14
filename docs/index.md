@@ -1,8 +1,8 @@
 ---
-title: netbox_unifi_sync
+title: netbox_unifi
 ---
 
-# netbox_unifi_sync
+# netbox_unifi
 
 Production-focused UniFi -> NetBox synchronization as an in-platform NetBox plugin.
 
@@ -22,11 +22,11 @@ Production-focused UniFi -> NetBox synchronization as an in-platform NetBox plug
 
 ## Visuals
 
-![Overview](./assets/netbox-unifi-sync-overview.svg)
+![Overview](./assets/netbox-unifi-overview.svg)
 
 ```mermaid
 flowchart LR
-    U["UniFi Controller(s)"] --> J["netbox_unifi_sync Jobs"]
+    U["UniFi Controller(s)"] --> J["netbox_unifi Jobs"]
     J --> N["NetBox"]
     S["Plugin Settings UI"] --> J
 ```
