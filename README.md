@@ -1,21 +1,8 @@
-# netbox-unifi
+# NetBox UniFi
 
-> [!WARNING]
-> We are aware that there are issues in the codebase.
-> This is a hobby project maintained in spare time.
-> Fixes and improvements are implemented when time allows.
-> Do not deploy in production without proper validation.
+`netbox_unifi` is a fork of [netbox-unifi-sync](https://github.com/unifi2netbox/netbox-unifi-sync) to make changes along with special feature use cases. `netbox_unifi` is a NetBox 4.2+ plugin that syncs your UniFi controller to NetBox to create a source of truth.
 
-`netbox_unifi` is a NetBox 4.2+ plugin that runs UniFi -> NetBox sync jobs inside NetBox workers.
-
----
-
-> [!IMPORTANT]
-> NetBox should be treated as the Source of Truth.
-> Objects created or managed by this plugin should not be manually modified unless you understand how future sync runs will affect them.
-
----
-
+All credits go to the team at unifi2netbox. Without them, this repo wouldn't exist and cool stuff wouldn't happen 😉
 ## Visual Overview
 
 ![netbox-unifi overview](docs/assets/netbox-unifi-overview.svg)
