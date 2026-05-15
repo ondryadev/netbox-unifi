@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-05-15
+
+### Fixed
+
+- **VLAN backfill on existing prefixes** — the ORM adapter's update path now rewrites `prefix.vlan = <int>` to `prefix.vlan_id = <int>`, so re-syncs successfully link existing prefixes to their UniFi-derived VLAN. Previously the assignment raised `TypeError` inside Django and was silently swallowed by a warning log.
+
 ## [1.0.0] - 2026-05-13
 
 ### Changed
