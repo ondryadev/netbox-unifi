@@ -136,7 +136,7 @@ class _OrmObject:
     # the ``_id`` suffix).  Django requires either ``field_id = int`` or
     # ``field = <model_instance>``; assigning an int to the bare FK name raises
     # ValueError.  We rewrite these automatically.
-    _INT_FK_FIELDS = frozenset({"primary_ip4", "primary_ip6"})
+    _INT_FK_FIELDS = frozenset({"primary_ip4", "primary_ip6", "vlan"})
 
     def __setattr__(self, name: str, value):
         if name == "_instance":
