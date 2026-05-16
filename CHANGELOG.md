@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-16
+
 ### Added
 
 - **NVR device family sync** — UniFi Protect NVR appliances (UNVR, UNVR-Pro, ENVR) adopted by your UDM/UCG are now discovered and synced into NetBox under a new `NVR` device role (default name: "Camera Security"). Device specs (u-height, ports, weight) populate automatically from the bundled community device-type library. Management IPs are synced like any normal device.
