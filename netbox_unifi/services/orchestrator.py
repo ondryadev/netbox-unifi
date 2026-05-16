@@ -17,46 +17,10 @@ from ..models import (
 )
 from .audit import sanitize_error
 from .runtime import auth_signature, redact_runtime, to_controller_runtime
+from ._role_migration import DEFAULT_ROLES, migrate_role_keys as _migrate_role_keys
 from ._validation import SyncConfigurationError, validate_runtime_config as _validate_runtime_config
 
 logger = logging.getLogger("netbox.plugins.netbox_unifi.orchestrator")
-
-DEFAULT_ROLES = {
-    "WIRELESS": "Wireless AP",
-    "ROUTER": "Router",
-    "LAN": "Switch",
-    "GATEWAY": "Security Appliance",
-    "UNKNOWN": "Network Device",
-}
-
-# Maps legacy role keys (from old DB records or env vars) to their canonical equivalents.
-_ROLE_KEY_ALIASES: dict[str, str] = {
-    "SWITCH": "LAN",
-    "SECURITY": "GATEWAY",
-    "OTHER": "UNKNOWN",
-    "PHONE": "UNKNOWN",
-}
-
-
-def _migrate_role_keys(roles: dict[str, str]) -> tuple[dict[str, str], bool]:
-    """Rename legacy role keys to canonical equivalents.
-
-    Returns (migrated_dict, changed) where *changed* is True if any key was
-    renamed or dropped (e.g. a duplicate alias was collapsed).
-    The canonical key always wins when both an alias and its target are present.
-    """
-    result: dict[str, str] = {}
-    changed = False
-    for key, value in roles.items():
-        canonical = _ROLE_KEY_ALIASES.get(key, key)
-        if canonical != key:
-            changed = True
-        if canonical not in result:
-            result[canonical] = value
-        else:
-            # Canonical already present — alias is a duplicate and gets dropped.
-            changed = True
-    return result, changed
 
 
 def get_or_create_global_settings() -> GlobalSyncSettings:

@@ -2300,23 +2300,29 @@ def get_device_features(device):
 def infer_role_key_for_device(device):
     """
     Infer a role key from device capabilities/model.
-    Supported keys: WIRELESS, LAN, GATEWAY, ROUTER, UNKNOWN.
+    Supported keys: WIRELESS, NVR, GATEWAY, LAN, UNKNOWN.
     """
     if is_access_point_device(device):
         return "WIRELESS"
 
     features = get_device_features(device)
     model = str(device.get("model", "")).upper()
+    model_name = str(device.get("model_name") or device.get("name", "")).lower()
+
+    if (
+        model.startswith(("UNVR", "ENVR"))
+        or "network video recorder" in model_name
+        or "nvr" in features
+    ):
+        return "NVR"
 
     if (
         {"gateway", "securityGateway", "routing", "wan"} & features
         or model.startswith(("USG", "UXG", "UDM", "UCG", "UDR", "UX", "UGW"))
         or "GATEWAY" in model
+        or "ROUTER" in model
     ):
         return "GATEWAY"
-
-    if "routing" in features or "ROUTER" in model:
-        return "ROUTER"
 
     if {"switching", "switch", "ports"} & features:
         return "LAN"
@@ -2334,7 +2340,7 @@ def select_netbox_role_for_device(device):
     if inferred_key in netbox_device_roles:
         return netbox_device_roles[inferred_key], inferred_key
 
-    for fallback_key in ("LAN", "WIRELESS", "GATEWAY", "ROUTER", "UNKNOWN"):
+    for fallback_key in ("LAN", "WIRELESS", "GATEWAY", "NVR", "UNKNOWN"):
         if fallback_key in netbox_device_roles:
             return netbox_device_roles[fallback_key], fallback_key
 
@@ -2882,7 +2888,8 @@ def process_device(unifi, nb, site, device, nb_ubiquiti, tenant, unifi_device_ip
                 logger.warning(f"Failed to sync interfaces for {device_name}: {e}")
 
         # Add primary IP if available.
-        # GATEWAY: sync VLAN interfaces + gateway IPs; ROUTER: skip (no network_conf access).
+        # GATEWAY: sync VLAN interfaces + gateway IPs (and skip the primary-IP path —
+        # gateway IP is set as part of that flow).
         role_key = infer_role_key_for_device(device)
         if role_key == "GATEWAY" and nb_device and unifi_site_obj:
             if _sync_option("SYNC_GATEWAY_INTERFACES", default=True):
@@ -2893,7 +2900,7 @@ def process_device(unifi, nb, site, device, nb_ubiquiti, tenant, unifi_device_ip
             else:
                 logger.debug(f"Skipping gateway interface sync for {device_name}")
             return
-        if role_key in ("GATEWAY", "ROUTER"):
+        if role_key == "GATEWAY":
             logger.debug(f"Skipping IP assignment for {device_name} — device is a {role_key}")
             return
 
@@ -2912,9 +2919,9 @@ def process_device(unifi, nb, site, device, nb_ubiquiti, tenant, unifi_device_ip
 
         # --- DHCP-to-static IP reassignment ---
         if is_ip_in_dhcp_range(device_ip):
-            # Skip routers/gateways — they manage their own IPs
+            # Skip gateways — they manage their own IPs.
             role_key = infer_role_key_for_device(device)
-            if role_key in ("GATEWAY", "ROUTER"):
+            if role_key == "GATEWAY":
                 logger.debug(f"Skipping DHCP-to-static for {device_name} — device is a {role_key}")
             else:
                 # If device already has a static IP in NetBox, keep it

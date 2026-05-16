@@ -131,7 +131,7 @@ class GlobalSyncSettingsForm(forms.ModelForm):
         label="NetBox role mappings",
         help_text=(
             "One mapping per line in the format  KEY = Role name.  "
-            "Canonical keys: WIRELESS, LAN, GATEWAY, ROUTER, UNKNOWN.  "
+            "Canonical keys: WIRELESS, LAN, GATEWAY, NVR, UNKNOWN.  "
             "Example: WIRELESS = Wireless AP"
         ),
         widget=forms.Textarea(attrs={
@@ -139,8 +139,8 @@ class GlobalSyncSettingsForm(forms.ModelForm):
             "placeholder": (
                 "WIRELESS = Wireless AP\n"
                 "LAN = Switch\n"
-                "ROUTER = Router\n"
-                "GATEWAY = Security Appliance\n"
+                "GATEWAY = Cloud Gateways\n"
+                "NVR = Camera Security\n"
                 "UNKNOWN = Network Device"
             ),
         }),

@@ -4,6 +4,25 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **NVR device family sync** — UniFi Protect NVR appliances (UNVR, UNVR-Pro, ENVR) adopted by your UDM/UCG are now discovered and synced into NetBox under a new `NVR` device role (default name: "Camera Security"). Device specs (u-height, ports, weight) populate automatically from the bundled community device-type library. Management IPs are synced like any normal device.
+
+### Changed
+
+- **Device role taxonomy aligned with UniFi Store categories.** Default role names:
+  - `GATEWAY` renamed from "Security Appliance" → "Cloud Gateways".
+  - `NVR` added → "Camera Security".
+  - `ROUTER` role removed (the inference branch always overlapped with `GATEWAY` and the role was effectively empty).
+- **`infer_role_key_for_device`** now returns `WIRELESS`, `NVR`, `GATEWAY`, `LAN`, or `UNKNOWN`. NVR matching keys off model prefixes (`UNVR`, `ENVR`), model-name text ("network video recorder"), or an `nvr` feature flag. Legacy "router" model strings now resolve to `GATEWAY` since UniFi's only routing devices are gateways.
+- **Role-key migration extended.** On plugin load, existing `GlobalSyncSettings.netbox_roles` JSON is rewritten once to: collapse any stored `ROUTER` entry into `GATEWAY` (alias), rename the value `"Security Appliance"` → `"Cloud Gateways"` *only when it matches the prior default* (user-customized values are preserved), and seed `NVR = "Camera Security"` if missing. The migration is idempotent. Canonical keys now win deterministically over their aliases regardless of stored dict ordering.
+
+- **Controller form: auth-mode aware credential fields.** The Add/Edit Controller form now hides credential inputs that aren't applicable to the selected auth mode — API Key mode (the default) shows only `api_key_ref` and `api_key_header`; Login mode shows `username_ref`, `password_ref`, and `mfa_secret_ref`. Toggling the auth mode updates the visible fields immediately without a page reload.
+
+### Internal
+
+- Extracted `DEFAULT_ROLES`, `_ROLE_KEY_ALIASES`, and `migrate_role_keys()` from `services/orchestrator.py` into a new pure-Python `services/_role_migration.py` so the migration rules can be unit-tested without booting Django.
+
 ## [1.0.1] - 2026-05-15
 
 ### Fixed

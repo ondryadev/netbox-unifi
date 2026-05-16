@@ -26,4 +26,39 @@
     </form>
   </div>
 </div>
+
+<script>
+  // Show only the credential fields relevant to the selected auth_mode.
+  // API key mode (the secure default) hides the username/password/MFA inputs;
+  // Login mode hides the API key inputs.
+  (function () {
+    var authMode = document.getElementById('id_auth_mode');
+    if (!authMode) return;
+
+    var apiKeyFields = ['id_api_key_ref', 'id_api_key_header'];
+    var loginFields  = ['id_username_ref', 'id_password_ref', 'id_mfa_secret_ref'];
+
+    function rowFor(id) {
+      var el = document.getElementById(id);
+      if (!el) return null;
+      return el.closest('p') || el.parentElement;
+    }
+
+    function setVisible(ids, visible) {
+      ids.forEach(function (id) {
+        var row = rowFor(id);
+        if (row) row.style.display = visible ? '' : 'none';
+      });
+    }
+
+    function apply() {
+      var isLogin = authMode.value === 'login';
+      setVisible(apiKeyFields, !isLogin);
+      setVisible(loginFields, isLogin);
+    }
+
+    authMode.addEventListener('change', apply);
+    apply();
+  })();
+</script>
 {% endblock %}
